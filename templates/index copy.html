@@ -1,0 +1,35 @@
+<!-- static/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat with Product Sales Data</title>
+</head>
+<body>
+  <h1>💬 Chat with Product Sales Data</h1>
+  <label for="product">Product:</label>
+  <input type="text" id="product" placeholder="e.g. Alpha"><br><br>
+  <label for="question">Your Question:</label><br>
+  <textarea id="question" rows="4" cols="50" placeholder="Ask a question..."></textarea><br>
+  <button onclick="ask()">Submit</button>
+
+  <h3>Answer:</h3>
+  <pre id="answer"></pre>
+
+  <script>
+    async function ask() {
+      const question = document.getElementById('question').value;
+      const product = document.getElementById('product').value;
+
+      const response = await fetch('/ask', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ question, product })
+      });
+
+      const result = await response.json();
+      document.getElementById('answer').innerText = result.answer || result.error;
+    }
+  </script>
+</body>
+</html>

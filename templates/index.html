@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🧠 Natural Language to SQL</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            padding: 40px;
+            background-color: #f7f9fc;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #3e3e3e;
+        }
+
+        input[type="text"] {
+            width: 97%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #6a5acd;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #5848c2;
+        }
+
+        .sql-block {
+            background-color: #f0f0f0;
+            padding: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            border-radius: 6px;
+        }
+
+        .result-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .result-table th, .result-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .result-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        .loading-spinner {
+            display: none;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #6a5acd;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        h3 {
+            margin-top: 30px;
+            color: #333;
+        }
+    </style>
+    <script>
+        function showSpinner() {
+            document.getElementById('spinner').style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Natural Language to SQL</h1>
+
+        <form method="POST" onsubmit="showSpinner()">
+            <input type="text" name="prompt" placeholder="Enter your question about the sales database..." value="{{ prompt }}" required>
+            <button type="submit">Generate and Execute SQL</button>
+        </form>
+
+        <div class="loading-spinner" id="spinner">
+            <div class="spinner"></div>
+            <p>Processing...</p>
+        </div>
+
+        {% if sql %}
+            <details style="margin-top: 30px;">
+                <summary style="font-size: 18px; font-weight: bold;">🧾 View Generated SQL</summary>
+                <div class="sql-block" style="margin-top: 10px;">{{ sql }}</div>
+            </details>
+        {% endif %}
+
+
+        {% if results %}
+            <h3>📊 Query Results</h3>
+            <table class="result-table">
+                <thead>
+                    <tr>
+                        {% for col in columns %}
+                            <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in results %}
+                        <tr>
+                            {% for cell in row %}
+                                <td>{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if explanation %}
+                <h3>🗣️ Natural Language Summary</h3>
+                <p>{{ explanation }}</p>
+            {% endif %}
+        {% endif %}
+
+        {% if history %}
+            <h3>📚 Query History</h3>
+            <ul>
+                {% for item in history %}
+                    <li><strong>{{ item.prompt }}</strong><br><code>{{ item.sql }}</code></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</body>
+</html>
